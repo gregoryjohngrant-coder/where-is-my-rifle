@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#292b22">
+  <title>Where's My Rifle? — A Trench Warfare Field Game</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #27302a;
+      --muted: #69736b;
+      --paper: #d7d2ba;
+      --paper-light: #f0edda;
+      --olive: #4a6654;
+      --olive-dark: #1c302c;
+      --rust: #b95d43;
+      --gold: #e4b75a;
+      --line: #a6a58b;
+      --shadow: 0 24px 70px #080f0d99;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 50% 0%, #46564a 0, transparent 48%),
+        repeating-linear-gradient(0deg, #d6d49a08 0 1px, transparent 1px 5px),
+        #18231f;
+      font: 16px/1.55 "Lucida Console", Monaco, Consolas, "Courier New", monospace;
+    }
+
+    button { font: inherit; }
+    .shell { width: min(1160px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 48px; }
+    .masthead { display: flex; align-items: center; justify-content: space-between; gap: 16px; color: #d9d4b8; margin-bottom: 14px; padding: 0 8px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-size: .76rem; letter-spacing: .17em; text-transform: uppercase; font-family: Consolas, "Courier New", monospace; font-weight: 700; }
+    .brand-mark { display: grid; width: 39px; height: 39px; place-items: center; color: var(--paper-light); background: var(--olive-dark); border: 2px solid #9c986b; border-radius: 3px; font-size: 1.1rem; box-shadow: inset 0 0 0 3px #344c43; }
+    .date-stamp { border: 1px solid #8a967a; border-radius: 2px; padding: 6px 12px; color: #dcd7b9; font: 700 .72rem Consolas, "Courier New", monospace; letter-spacing: .06em; text-transform: uppercase; }
+    .frame { position: relative; background: #222c26; padding: 11px; border: 2px solid #81836b; border-radius: 13px; overflow: hidden; box-shadow: var(--shadow), inset 0 0 0 4px #111a16; }
+    .frame::before { content: ""; position: absolute; z-index: 4; pointer-events: none; inset: 5px; border: 1px solid #b1aa7c66; border-radius: 7px; }
+    .hero {
+      position: relative; overflow: hidden; min-height: 360px; display: flex; flex-direction: column; justify-content: center;
+      padding: clamp(32px, 6vw, 68px); color: #e4ddbd;
+      background:
+        linear-gradient(180deg, #263f38 0%, #1b302b 58%, #172722 100%);
+    }
+    .hero::after { content: ""; position: absolute; inset: 12px; border: 1px solid #9d9a69; box-shadow: inset 0 0 0 3px #1c302c; pointer-events: none; background: repeating-linear-gradient(0deg, #e1ddb108 0 1px, transparent 1px 4px); }
+    .hero > *:not(.hero-illustration) { position: relative; z-index: 1; max-width: 535px; }
+    .hero-illustration { position: absolute; z-index: 0; right: 4%; bottom: 8%; width: min(40%, 430px); height: 76%; color: #48513d; image-rendering: pixelated; }
+    .eyebrow { font: 700 .77rem Consolas, "Courier New", monospace; letter-spacing: .13em; text-transform: uppercase; color: #e4b75a; }
+    h1 { margin: 8px 0 12px; font-size: clamp(3rem, 7.5vw, 5.5rem); line-height: .91; letter-spacing: -.055em; color: #f0e9ce; text-shadow: 3px 3px 0 #111b17; }
+    .hero p { max-width: 470px; margin: 0 0 22px; color: #d0d2b7; font-size: 1.08rem; }
+    .button {
+      border: 1px solid #9f986b; border-radius: 2px; padding: 11px 18px; cursor: pointer; font: 700 .85rem Consolas, "Courier New", monospace;
+      letter-spacing: .03em; transition: transform .15s, background .15s, box-shadow .15s;
+    }
+    .hero .button { align-self: flex-start; }
+    .button:hover { transform: translateY(-2px); }
+    .button:focus-visible, .station-button:focus-visible, .choice:focus-visible, .diagram-tab:focus-visible { outline: 3px solid #d3a75c; outline-offset: 3px; }
+    .button-primary { background: #b95d43; color: #fff0cf; box-shadow: 0 3px 0 #703b32; }
+    .button-primary:hover { background: #cc7050; }
+    .button-quiet { background: #e5dfc4; color: var(--olive-dark); border: 1px solid var(--line); }
+    .intro { position: relative; padding: 26px clamp(22px, 5vw, 54px) 32px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; background: #d7d2ba; border-top: 2px solid #7d8065; }
+    .intro h2, .section-title { margin: 0 0 8px; font-size: 1.55rem; }
+    .intro p { margin: 0; color: #4f584d; }
+    .briefing { padding-left: 22px; border-left: 3px solid var(--rust); }
+    .briefing strong { display: block; margin-bottom: 4px; font: 700 .76rem Consolas, "Courier New", monospace; color: var(--rust); letter-spacing: .09em; text-transform: uppercase; }
+
+    .game { display: none; }
+    .game.active { display: block; }
+    .game-top { padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; gap: 18px; color: #f4e8ca; background: var(--olive-dark); border-bottom: 4px double #b8975b; }
+    .game-top p { margin: 0; font: 700 .78rem "Lucida Console", Monaco, Consolas, "Courier New", monospace; letter-spacing: .1em; text-transform: uppercase; }
+    .progress-wrap { display: flex; align-items: center; gap: 12px; min-width: min(330px, 50%); font: 700 .78rem "Lucida Console", Monaco, Consolas, "Courier New", monospace; }
+    .progress-track { height: 9px; flex: 1; overflow: hidden; border: 1px solid #d2bd8c; background: #242d20; }
+    .progress-bar { height: 100%; width: 0; background: repeating-linear-gradient(135deg, #c79a54 0 6px, #dab66f 6px 12px); transition: width .3s ease; }
+    .game-body { display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 590px; background: #f1e5c9; }
+    .sidebar { padding: 24px 18px; background: #e5d6b3; border-right: 1px solid #a88c5a; }
+    .sidebar-label { margin: 0 0 13px; font: 700 .72rem "Lucida Console", Monaco, Consolas, "Courier New", monospace; letter-spacing: .12em; text-transform: uppercase; color: var(--rust); }
+    .station-list { display: grid; gap: 8px; }
+    .station-button { display: flex; align-items: center; gap: 10px; text-align: left; width: 100%; padding: 10px; border: 1px solid transparent; border-radius: 2px; color: var(--ink); background: transparent; cursor: pointer; }
+    .station-button:hover { background: #f7edda99; }
+    .station-button.current { border-color: #9d8253; background: #f6ecd4; box-shadow: 2px 2px 0 #8e754a55; }
+    .station-button.complete .station-dot { color: #f8efd9; background: var(--olive); border-color: var(--olive); }
+    .station-dot { flex: 0 0 28px; height: 28px; display: grid; place-items: center; border: 1px solid #8f7955; border-radius: 50%; color: var(--muted); font: 700 .72rem "Lucida Console", Monaco, Consolas, "Courier New", monospace; }
+    .station-name { font: 700 .78rem "Lucida Console", Monaco, Consolas, "Courier New", monospace; }
+    .sidebar-note { margin: 28px 4px 0; padding-top: 16px; border-top: 1px dashed #9f895e; color: #66583f; font-size: .86rem; font-style: italic; }
+    .station-content { padding: clamp(22px, 4vw, 42px); min-width: 0; }
+    .station-kicker { color: var(--rust); font: 700 .72rem "Lucida Console", Monaco, Consolas, "Courier New", monospace; letter-spacing: .13em; text-transform: uppercase; }
+    .station-content h2 { margin: 5px 0 10px; font-size: clamp(1.9rem, 4vw, 2.8rem); line-height: 1.02; letter-spacing: -.025em; color: var(--olive-dark); }
+    .lead { max-width: 700px; margin: 0 0 24px; color: #5f543f; font-size: 1.05rem; }
+    .info-box { background: #f8efd9; border: 1px solid #b7a178; border-radius: 2px; padding: 18px 20px; box-shadow: inset 0 0 0 3px #f1e5c9; }
+    .info-box h3 { margin: 0 0 8px; color: var(--olive-dark); font-size: 1.15rem; }
+    .info-box p { margin: 8px 0; }
+    .info-box ul { margin: 8px 0 0; padding-left: 20px; }
+    .info-box li + li { margin-top: 5px; }
+    .quiz { margin-top: 22px; padding-top: 20px; border-top: 1px dashed #9f895e; }
+    .quiz h3 { margin: 0 0 11px; font-size: 1.03rem; }
+    .choices { display: grid; gap: 8px; }
+    .choice { padding: 10px 13px; text-align: left; border: 1px solid #b7a178; border-radius: 2px; background: #f8efd9; color: var(--ink); cursor: pointer; transition: border .15s, background .15s; }
+    .choice:hover { border-color: var(--olive); background: #fff8e8; }
+    .choice[disabled] { cursor: default; opacity: .72; }
+    .feedback { min-height: 28px; margin: 12px 0 0; font: 700 .82rem "Lucida Console", Monaco, Consolas, "Courier New", monospace; }
+    .feedback.good { color: #46603d; }
+    .feedback.try { color: #92533a; }
+    .station-footer { margin-top: 18px; display: flex; justify-content: flex-end; }
+    .complete-message { margin-top: 20px; padding: 14px 16px; border-left: 3px solid var(--olive); background: #e5e6cf; border-radius: 2px; font-style: italic; }
+
+    .diagram-frame { margin: 20px 0; border: 1px solid #a68d5e; border-radius: 2px; overflow: hidden; background: #f8efd9; box-shadow: inset 0 0 0 4px #eddfbd; }
+    .diagram-tabs { display: flex; gap: 0; border-bottom: 1px solid #a68d5e; background: #e5d6b3; }
+    .diagram-tab { flex: 1; padding: 11px 8px; color: #5f543f; border: 0; border-right: 1px solid #b8a47a; background: transparent; cursor: pointer; font: 700 .78rem "Lucida Console", Monaco, Consolas, "Courier New", monospace; }
+    .diagram-tab:last-child { border-right: 0; }
+    .diagram-tab[aria-selected="true"] { color: var(--olive-dark); background: #f8efd9; box-shadow: inset 0 -3px var(--rust); }
+    .diagram-panel { padding: 12px; }
+    .diagram-panel[hidden] { display: none; }
+    .diagram-panel svg { display: block; width: 100%; height: auto; max-height: 350px; }
+    .diagram-caption { margin: 3px 6px 8px; color: #60695c; font-size: .86rem; }
+    .diagram-panel svg text { font-family: "Lucida Console", Monaco, Consolas, "Courier New", monospace; fill: #342d23; font-size: 14px; font-weight: 700; }
+    .diagram-panel svg .small { font-size: 12px; font-weight: 600; }
+    .diagram-panel svg .label-line { stroke: #394a3d; stroke-width: 1.6; }
+
+    .weapon-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+    .weapon { border: 1px solid var(--line); border-radius: 2px; padding: 13px; background: #fbf4e3; }
+    .weapon strong { display: block; margin-bottom: 4px; color: var(--rust); font-size: .92rem; }
+    .weapon span { color: #566052; font-size: .9rem; }
+    .timeline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+    .timeline article { padding: 12px; border-top: 3px double var(--rust); background: #fbf4e3; }
+    .timeline strong { display: block; margin-bottom: 4px; font: 700 .76rem "Lucida Console", Monaco, Consolas, "Courier New", monospace; text-transform: uppercase; color: var(--olive); }
+    .timeline span { color: #566052; font-size: .88rem; }
+    .finale { text-align: center; padding: 38px 24px; }
+    .finale .badge { display: inline-grid; place-items: center; width: 66px; height: 66px; border: 1px solid #9c7e4c; border-radius: 50%; background: #e5d6b3; color: var(--olive-dark); font-size: 1.8rem; }
+    .finale h2 { margin: 14px 0 8px; font-size: 2.4rem; color: var(--olive-dark); }
+    .finale p { max-width: 570px; margin: 0 auto 18px; color: #5f543f; }
+    .source-note { padding: 16px 22px; color: #66583f; border-top: 1px solid #a88c5a; background: #e5d6b3; font: .72rem/1.5 "Lucida Console", Monaco, Consolas, "Courier New", monospace; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    .hero .button { position: relative; z-index: 2; }
+    .hero > p:not(.hero-illustration) { max-width: 410px; }
+    .hero::before { content: none; }
+    .intro h2, .section-title, .station-content h2, .info-box h3, .quiz h3 { font-family: "Lucida Console", Monaco, Consolas, "Courier New", monospace; }
+    .game-top { background: #202b26; border-bottom: 3px solid #89906d; }
+    .game-top p, .progress-wrap, .sidebar-label, .station-kicker { font-family: Consolas, "Courier New", monospace; }
+    .game-top p::before { content: "■ "; color: #e4b75a; }
+    .progress-wrap { color: #e5dfc4; }
+    .progress-track { border-color: #9ca280; background: #17231f; }
+    .progress-bar { background: repeating-linear-gradient(90deg, #e4b75a 0 8px, #c99a4e 8px 11px); }
+    .game-body { background: #d7d2ba; }
+    .sidebar { background: #c8c8ad; border-right: 2px solid #898f73; }
+    .sidebar-label { padding-bottom: 10px; border-bottom: 1px solid #9ea084; }
+    .station-list { gap: 7px; }
+    .station-button { position: relative; min-height: 48px; border: 1px solid transparent; background: #d5d4bd; }
+    .station-button:hover { background: #e2e0c8; }
+    .station-button.current { border-color: #596e5d; background: #edf0d9; box-shadow: inset 4px 0 #b95d43, 2px 2px 0 #8e9075; }
+    .station-button.complete .station-dot { color: #17231f; background: #e4b75a; border-color: #74683f; }
+    .station-dot { flex-basis: 30px; height: 30px; border-radius: 2px; color: #e8e4c9; background: #334940; border: 1px solid #627567; font: 700 .72rem Consolas, monospace; }
+    .station-name { font: 700 .82rem Consolas, "Courier New", monospace; }
+    .sidebar-note { padding: 12px; border: 1px solid #9ea084; background: #d7d6bd; font-style: normal; font-size: .82rem; }
+    .station-content { background: #e1ddc6; }
+    .station-kicker { display: inline-block; padding: 4px 7px; color: #863f31; background: #e8c99a; border: 1px solid #b9925b; font-size: .68rem; }
+    .station-content h2 { margin-top: 10px; }
+    .lead { max-width: 720px; padding-left: 13px; border-left: 3px solid #9ba184; color: #525c50; }
+    .info-box { background: #f0edda; border: 1px solid #9ea084; box-shadow: inset 0 0 0 3px #e4e1ca, 3px 3px 0 #a9aa91; }
+    .weapon { border-color: #a7a78e; background: #f2efd9; }
+    .timeline article { border-color: #a95340; background: #f2efd9; }
+    .quiz { border-top: 2px dotted #92977b; }
+    .quiz h3 { color: #263b32; }
+    .choice { background: #f0edda; border-color: #959b7e; }
+    .choice:hover { border-color: #496552; background: #faf8e8; }
+    .button-quiet { background: #d0d2b9; border-color: #8f967a; }
+    .complete-message { color: #304237; background: #d9e0c4; border: 1px solid #899878; border-left: 4px solid #526b52; }
+    .diagram-frame { position: relative; margin: 20px 0 24px; padding: 5px; background: #263831; border: 2px solid #647363; box-shadow: inset 0 0 0 2px #17231f, 4px 4px 0 #a6a58b; }
+    .diagram-tabs { border: 0; background: #263831; gap: 5px; padding: 3px 3px 7px; }
+    .diagram-tab { color: #c9d0b1; background: #33463b; border: 1px solid #647363; font: 700 .76rem Consolas, "Courier New", monospace; text-transform: uppercase; }
+    .diagram-tab:hover { background: #43584a; }
+    .diagram-tab[aria-selected="true"] { color: #202b26; background: #e4b75a; box-shadow: none; border-color: #f2d58e; }
+    .diagram-panel { padding: 0 7px 8px; background: #d9d4bb; }
+    .diagram-panel::before { content: none; }
+    .diagram-panel svg { max-height: 380px; border: 1px solid #9a987b; background: #c7c9a8; image-rendering: pixelated; }
+    .diagram-caption { padding: 9px 10px 0; color: #4d594a; font: .82rem/1.45 Consolas, "Courier New", monospace; }
+    .diagram-panel svg text { fill: #202f29; font-family: Consolas, "Courier New", monospace; font-size: 13px; }
+    .diagram-panel svg .small { font-size: 11px; }
+    .diagram-panel svg .label-line { stroke: #374c3d; stroke-width: 2; }
+    .diagram-key { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; padding: 9px 2px 2px; }
+    .diagram-key span { display: flex; align-items: center; gap: 6px; min-height: 28px; padding: 4px 6px; color: #34443a; background: #e9e5cd; border: 1px solid #a6a58b; font: 700 .68rem Consolas, "Courier New", monospace; }
+    .diagram-key b { display: inline-grid; flex: 0 0 20px; height: 20px; place-items: center; color: #fff0cf; background: #a9523e; font-size: .62rem; }
+    .diagram-panel svg .number-labels text { fill: #fff0cf; }
+    .firestep-note { display: grid; grid-template-columns: max-content 1fr; gap: 12px; align-items: baseline; margin: -8px 0 18px; padding: 12px 15px; color: #35483a; background: #e5dfbf; border: 1px solid #9a9d7e; border-left: 5px solid #b95d43; font-size: .92rem; }
+    .firestep-note strong { color: #8c4838; font: 700 .74rem Consolas, "Courier New", monospace; letter-spacing: .06em; text-transform: uppercase; }
+    .finale { border: 1px solid #999d7e; background: #d5d5ba; box-shadow: inset 0 0 0 5px #c5c6a9; }
+    .finale .badge { border-radius: 3px; background: #e4b75a; }
+    .finale h2 { color: #263b32; }
+    .finale p { color: #4f594d; }
+    .source-note { color: #d6d4b8; background: #202b26; border-top: 2px solid #89906d; font: .72rem/1.5 Consolas, "Courier New", monospace; }
+    .frame::before { inset: 5px; }
+    body::before { content: ""; position: fixed; z-index: 20; inset: 0; pointer-events: none; opacity: .12; background: repeating-linear-gradient(0deg, transparent 0 3px, #121b160e 4px 5px); }
+    .map-markers rect { fill: #b95d43; stroke: #fff0cf; stroke-width: 2; }
+    .map-markers text { fill: #fff0cf; }
+    .map-labels text { fill: #27382f; font: 700 11px Consolas, monospace; }
+    .diagram-key { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .diagram-key span { font-size: .64rem; }
+
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 18px, 680px); padding-top: 14px; }
+      .date-stamp { font-size: .62rem; }
+      .intro { grid-template-columns: 1fr; gap: 18px; }
+      .briefing { padding-left: 14px; }
+      .game-body { grid-template-columns: 1fr; }
+      .sidebar { padding: 14px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .station-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .sidebar-note { display: none; }
+      .game-top { align-items: flex-start; flex-direction: column; }
+      .progress-wrap { min-width: 100%; }
+      .timeline { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 460px) {
+      .masthead { align-items: flex-start; }
+      .brand { font-size: .68rem; }
+      .hero { min-height: 310px; }
+      .hero-illustration { right: 1%; bottom: 8%; width: 46%; height: 56%; opacity: .9; }
+      .hero > *:not(.hero-illustration) { max-width: 85%; }
+      .station-list { grid-template-columns: 1fr 1fr; }
+      .station-name { font-size: .76rem; }
+      .weapon-grid { grid-template-columns: 1fr; }
+      .diagram-panel { padding: 5px; }
+      .diagram-panel svg text { font-size: 16px; }
+      .diagram-panel svg .small { font-size: 14px; }
+    }
+    @media (max-width: 520px) {
+      .frame { padding: 7px; border-radius: 9px; }
+      .hero { min-height: 345px; padding: 38px 24px; }
+      .hero::before { top: 24px; right: 24px; font-size: .56rem; }
+      .hero-illustration { right: 0; bottom: 10px; width: 60%; height: 45%; opacity: .55; }
+      .hero > *:not(.hero-illustration) { max-width: 100%; }
+      .hero p { max-width: 90%; }
+      .station-button { padding: 7px 5px; gap: 7px; }
+      .station-name { font-size: .68rem; }
+      .station-dot { flex-basis: 25px; height: 25px; font-size: .63rem; }
+      .diagram-panel { padding: 0 3px 6px; }
+      .diagram-panel svg text { font-size: 16px; }
+      .diagram-panel svg .small { font-size: 14px; }
+      .diagram-caption { font-size: .72rem; }
+      .diagram-key { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .firestep-note { grid-template-columns: 1fr; gap: 4px; }
+    }
+
+    :root {
+      --ink: #342f24;
+      --muted: #625e4d;
+      --paper: #b7ab82;
+      --paper-light: #d7cba7;
+      --olive: #526345;
+      --olive-dark: #2d392b;
+      --rust: #80563a;
+      --gold: #a68b55;
+      --line: #887e5e;
+      --shadow: 0 24px 70px #080b0799;
+    }
+
+    body {
+      background:
+        radial-gradient(ellipse at 50% 0%, #48503b 0, transparent 48%),
+        repeating-linear-gradient(0deg, #d6d49a08 0 1px, transparent 1px 5px),
+        #292b22;
+    }
+
+    .masthead { color: #d8cda9; }
+    .brand-mark { color: #e0d4b2; background: #394431; border-color: #92845f; box-shadow: inset 0 0 0 3px #4e5940; }
+    .date-stamp { color: #d8cda9; border-color: #817a5d; }
+    .frame { background: #35362a; border-color: #777052; box-shadow: var(--shadow), inset 0 0 0 4px #20231c; }
+    .frame::before { border-color: #a4956c66; }
+    .hero {
+      color: #e0d4b2;
+      background: linear-gradient(180deg, #394431 0%, #303a2d 58%, #282f25 100%);
+    }
+    .hero::after { border-color: #99865c; box-shadow: inset 0 0 0 3px #2d392b; }
+    .hero-illustration { height: auto; aspect-ratio: 1.8; image-rendering: auto; }
+    .eyebrow, .hero::before { color: #b7a16b; }
+    h1 { color: #e8ddb9; text-shadow: 3px 3px 0 #20251d; }
+    .hero p { color: #d0c8a7; }
+    .button { border-color: #96845c; }
+    .button-primary { background: #795238; color: #f0e2bd; box-shadow: 0 3px 0 #4d3929; }
+    .button-primary:hover { background: #8d6240; }
+    .button-quiet { background: #d2c49b; color: #2d392b; border-color: #8d815e; }
+    .button:focus-visible, .station-button:focus-visible, .choice:focus-visible, .diagram-tab:focus-visible { outline-color: #c3a86a; }
+    .intro { background: #b7ab82; border-top-color: #77714f; }
+    .intro p { color: #4c4838; }
+    .briefing { border-left-color: #80563a; }
+    .briefing strong { color: #704b34; }
+    .game-top { color: #e0d4b2; background: #30382a; border-bottom-color: #897a51; }
+    .game-top p::before { color: #ad945a; }
+    .progress-wrap { color: #ddd1ad; }
+    .progress-track { border-color: #95845c; background: #24281f; }
+    .progress-bar { background: repeating-linear-gradient(90deg, #a68b55 0 8px, #b9a16c 8px 11px); }
+    .game-body, .station-content { background: #c4b891; }
+    .sidebar { background: #b2a57c; border-right-color: #887b58; }
+    .sidebar-label { color: #704b34; border-bottom-color: #8e825d; }
+    .station-button { color: #342f24; background: #bdb18a; }
+    .station-button:hover { background: #c9bd96; }
+    .station-button.current { border-color: #5a6847; background: #d3c8a4; box-shadow: inset 4px 0 #80563a, 2px 2px 0 #777052; }
+    .station-button.complete .station-dot { color: #e4d8b5; background: #526345; border-color: #526345; }
+    .station-dot { color: #e4d8b5; background: #394431; border-color: #777052; }
+    .sidebar-note { color: #514a37; border-color: #8e825d; background: #c0b38b; }
+    .station-kicker { color: #68462f; background: #d0bb8f; border-color: #96815a; }
+    .station-content h2, .info-box h3, .quiz h3, .finale h2 { color: #2d392b; }
+    .lead { color: #4e4938; border-left-color: #687453; }
+    .info-box { background: #d7cba7; border-color: #978761; box-shadow: inset 0 0 0 3px #cfc29c, 3px 3px 0 #a89c76; }
+    .weapon, .timeline article { background: #d8cca9; border-color: #948660; }
+    .weapon strong { color: #704b34; }
+    .weapon span, .timeline span { color: #4f4b3b; }
+    .timeline article { border-top-color: #80563a; }
+    .timeline strong { color: #526345; }
+    .quiz { border-top-color: #8a805d; }
+    .choice { color: #342f24; background: #d7cba7; border-color: #918360; }
+    .choice:hover { border-color: #526345; background: #e0d5b4; }
+    .feedback.good { color: #40543a; }
+    .feedback.try { color: #74482f; }
+    .complete-message { color: #344333; background: #c6cba8; border-color: #79815d; border-left-color: #526345; }
+    .diagram-frame { background: #30382a; border-color: #68704f; box-shadow: inset 0 0 0 2px #24281f, 4px 4px 0 #8e825d; }
+    .diagram-tabs { background: #30382a; }
+    .diagram-tab { color: #d2c69f; background: #3b4633; border-color: #68704f; }
+    .diagram-tab:hover { background: #4c5940; }
+    .diagram-tab[aria-selected="true"] { color: #293126; background: #b5a06a; border-color: #d0bd88; }
+    .diagram-panel { background: #c2b58d; }
+    .diagram-panel::before { color: #4c503a; }
+    .diagram-panel svg { background: #c0b68f; filter: sepia(.12) saturate(.82); }
+    .diagram-panel svg text { fill: #302f25; }
+    .diagram-panel svg .label-line { stroke: #394331; }
+    .diagram-caption { color: #4d503e; }
+    .diagram-key span { color: #37382b; background: #d4c8a5; border-color: #958866; }
+    .diagram-key b, .map-markers rect, .diagram-panel svg > g[fill="#b95d43"] rect { color: #eee2c0; background: #765439; fill: #765439; }
+    .diagram-key b { display: inline-grid; place-items: center; }
+    .diagram-panel svg .number-labels text, .map-markers text { fill: #f0e4c3; }
+    .firestep-note { color: #3e4937; background: #d1c6a0; border-color: #8f8664; border-left-color: #80563a; }
+    .firestep-note strong { color: #704b34; }
+    .finale { background: #c2b891; border-color: #89815e; box-shadow: inset 0 0 0 5px #b3a77f; }
+    .finale .badge { color: #f0e4c3; background: #526345; border-color: #68704f; }
+    .finale p { color: #4d4939; }
+    .source-note { color: #d2c69f; background: #30382a; border-top-color: #897a51; }
+    .creator-credit { margin: 12px 8px 0; color: #c1b58e; text-align: right; font: .72rem/1.5 Consolas, "Courier New", monospace; }
+    body { font-family: Consolas, "Courier New", monospace; }
+    .brand, .date-stamp, .eyebrow, .button, .game-top p, .progress-wrap, .sidebar-label, .station-name, .station-kicker, .diagram-tab, .diagram-caption, .diagram-key, .creator-credit { font-family: Consolas, "Courier New", monospace; }
+    .brand { letter-spacing: .08em; }
+    .hero h1, .intro h2, .station-content h2, .info-box h3, .quiz h3, .finale h2 { letter-spacing: normal; }
+    .hero h1 { font-weight: 700; }
+    .intro { background-image: linear-gradient(168deg, transparent 0 98%, #8e825d22 100%); }
+    .info-box { border-radius: 2px 5px 3px 4px; box-shadow: 2px 3px 0 #8e825d24; }
+    .quiz { border-top-style: solid; }
+    .station-kicker { letter-spacing: .06em; text-transform: none; }
+    .firestep-note { border-radius: 2px 5px 3px 4px; }
+    .firestep-note strong { font-size: .9rem; font-weight: 600; letter-spacing: 0; text-transform: none; }
+    .source-note { font-size: .82rem; }
+    body * { font-family: Consolas, "Courier New", monospace !important; }
+
+    @media (max-width: 520px) {
+      .hero-illustration { right: 0; bottom: 10px; width: 60%; height: auto; opacity: .48; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="masthead">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">▤</span> Notes from the Western Front</div>
+      <div class="date-stamp">France · 1916</div>
+    </header>
+
+    <main class="frame">
+      <section class="welcome" id="welcome">
+        <div class="hero">
+          <svg class="hero-illustration" viewBox="0 0 360 200" role="img" aria-labelledby="rifle-title rifle-description">
+            <title id="rifle-title">P.14 service rifle reference illustration</title>
+            <desc id="rifle-description">The supplied vintage illustrated plate of a First World War P.14 service rifle, including its original labels and annotations.</desc>
+            <rect x="14" y="8" width="332" height="184" fill="#c8ba91" stroke="#8f805c" stroke-width="3"/>
+            <image href="rifle-reference.png" x="20" y="11" width="320" height="181" preserveAspectRatio="xMidYMid meet"/>
+          </svg>
+          <div class="eyebrow">A story from the trenches</div>
+          <h1>Where's my<br>rifle?</h1>
+          <p>The next relief is due, and one soldier can't find his rifle. It was last seen somewhere behind the front. Follow the trail and see if you can work out where it went.</p>
+          <button class="button button-primary" id="begin">Search for the rifle <span aria-hidden="true">→</span></button>
+        </div>
+        <div class="intro">
+          <div>
+            <h2>The situation</h2>
+            <p>It's 1916. The men are due to leave the front line, but one rifle is missing. You'll follow its trail through the trenches and learn a little about the soldiers who served there along the way.</p>
+          </div>
+          <div class="briefing">
+            <strong>A note before you start</strong>
+            <p>The trail is made up, but the trenches, weapons, dangers and daily routines are based on life on the Western Front.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="game" id="game" aria-label="Missing rifle investigation">
+        <div class="game-top">
+          <p>Following the rifle's trail</p>
+          <div class="progress-wrap" aria-label="Investigation progress">
+            <span id="progress-label">0 of 5 clues</span>
+            <div class="progress-track" role="progressbar" aria-label="Clues collected" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0">
+              <div class="progress-bar" id="progress-bar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="game-body">
+          <aside class="sidebar">
+            <p class="sidebar-label">Stops along the way</p>
+            <nav class="station-list" id="station-list" aria-label="Investigation stations"></nav>
+            <p class="sidebar-note">Each stop turns up another clue. Take a look around before you move on.</p>
+          </aside>
+          <section class="station-content" id="station-content" aria-live="polite"></section>
+        </div>
+        <footer class="source-note">Historical note: trench systems varied by army, location, and year. This overview describes common features of the Western Front, especially from 1915 onward.</footer>
+      </section>
+    </main>
+    <footer class="creator-credit">Game created by Gregory Grant.</footer>
+  </div>
+
+  <script>
+    const aerialDiagram = `
+      <svg viewBox="0 0 760 340" role="img" aria-labelledby="aerial-title aerial-desc">
+        <title id="aerial-title">Bird's-eye view of a trench system</title>
+        <desc id="aerial-desc">A plan view with opposing front lines, barbed wire, No Man's Land, and numbered locations for the friendly front, communication, support, and reserve trenches.</desc>
+        <defs>
+          <pattern id="map-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M20 0H0V20" fill="none" stroke="#53674f" stroke-width="1" opacity=".14"/>
+          </pattern>
+          <pattern id="mud-pixels" width="12" height="12" patternUnits="userSpaceOnUse">
+            <rect x="2" y="3" width="3" height="2" fill="#8a7658" opacity=".45"/>
+            <rect x="8" y="8" width="2" height="2" fill="#8a7658" opacity=".35"/>
+          </pattern>
+        </defs>
+        <rect width="760" height="340" fill="#c5c9a5"/>
+        <rect width="760" height="340" fill="url(#map-grid)"/>
+        <rect x="0" y="145" width="760" height="75" fill="url(#mud-pixels)" opacity=".8"/>
+        <path d="M25 35 L145 35 L145 45 L250 45 L250 35 L360 35 L360 45 L470 45 L470 35 L585 35 L585 45 L735 45" fill="none" stroke="#9a6348" stroke-width="20" stroke-linejoin="miter"/>
+        <path d="M25 35 L145 35 L145 45 L250 45 L250 35 L360 35 L360 45 L470 45 L470 35 L585 35 L585 45 L735 45" fill="none" stroke="#3d493a" stroke-width="7" stroke-linejoin="miter"/>
+        <path d="M25 92 L145 92 L145 115 L250 115 L250 92 L360 92 L360 116 L470 116 L470 92 L585 92 L585 116 L735 116" fill="none" stroke="#4e6046" stroke-width="26" stroke-linejoin="miter"/>
+        <path d="M25 92 L145 92 L145 115 L250 115 L250 92 L360 92 L360 116 L470 116 L470 92 L585 92 L585 116 L735 116" fill="none" stroke="#283b32" stroke-width="9" stroke-linejoin="miter"/>
+        <path d="M25 234 L160 234 L160 256 L285 256 L285 234 L420 234 L420 256 L555 256 L555 234 L735 234" fill="none" stroke="#687850" stroke-width="24" stroke-linejoin="miter"/>
+        <path d="M25 234 L160 234 L160 256 L285 256 L285 234 L420 234 L420 256 L555 256 L555 234 L735 234" fill="none" stroke="#34473a" stroke-width="8" stroke-linejoin="miter"/>
+        <path d="M62 294 L202 294 L202 310 L356 310 L356 294 L520 294 L520 310 L700 310" fill="none" stroke="#7b865d" stroke-width="22" stroke-linejoin="miter"/>
+        <path d="M62 294 L202 294 L202 310 L356 310 L356 294 L520 294 L520 310 L700 310" fill="none" stroke="#394a3b" stroke-width="7" stroke-linejoin="miter"/>
+        <path d="M205 110 L205 239 M324 110 L324 239 M496 110 L496 239 M626 110 L626 239" fill="none" stroke="#a45c43" stroke-width="18" stroke-linecap="square"/>
+        <path d="M205 110 L205 239 M324 110 L324 239 M496 110 L496 239 M626 110 L626 239" fill="none" stroke="#34473a" stroke-width="6" stroke-linecap="square"/>
+        <g fill="#b95d43" stroke="#34473a" stroke-width="2">
+          <rect x="210" y="104" width="8" height="8"/>
+          <rect x="329" y="104" width="8" height="8"/>
+          <rect x="501" y="104" width="8" height="8"/>
+          <rect x="631" y="104" width="8" height="8"/>
+        </g>
+        <g stroke="#725e48" stroke-width="2">
+          <path d="M70 168 l14 14 m0 -14 l-14 14 M110 168 l14 14 m0 -14 l-14 14 M310 168 l14 14 m0 -14 l-14 14 M388 168 l14 14 m0 -14 l-14 14 M542 168 l14 14 m0 -14 l-14 14 M675 168 l14 14 m0 -14 l-14 14"/>
+        </g>
+        <path d="M710 80 l0 -38 m-8 9 l8 -9 l8 9" fill="none" stroke="#26342d" stroke-width="3"/>
+        <g class="map-markers" text-anchor="middle" font-family="Consolas, monospace" font-size="10" font-weight="700">
+          <g transform="translate(690 44)"><rect width="22" height="22"/><text x="11" y="15">01</text></g>
+          <g transform="translate(80 151)"><rect width="22" height="22"/><text x="11" y="15">02</text></g>
+          <g transform="translate(357 175)"><rect width="22" height="22"/><text x="11" y="15">03</text></g>
+          <g transform="translate(555 94)"><rect width="22" height="22"/><text x="11" y="15">04</text></g>
+          <g transform="translate(315 194)"><rect width="22" height="22"/><text x="11" y="15">05</text></g>
+          <g transform="translate(553 225)"><rect width="22" height="22"/><text x="11" y="15">06</text></g>
+          <g transform="translate(553 292)"><rect width="22" height="22"/><text x="11" y="15">07</text></g>
+        </g>
+        <g class="map-labels"><text x="695" y="37" class="small">FRONT</text><text x="24" y="329" class="small">REAR</text></g>
+      </svg>
+      <div class="diagram-key" aria-label="Aerial diagram key">
+        <span><b>01</b> Enemy front</span><span><b>02</b> Barbed wire</span>
+        <span><b>03</b> No Man's Land</span><span><b>04</b> Front line</span>
+        <span><b>05</b> Communication</span><span><b>06</b> Support line</span>
+        <span><b>07</b> Reserve line</span>
+      </div>`;
+
+    const sectionDiagram = `
+      <svg viewBox="0 0 760 380" role="img" aria-labelledby="section-title section-desc">
+        <title id="section-title">Cross-section view of a front-line trench</title>
+        <desc id="section-desc">A pixel-art cutaway shows the front parapet and sandbags, fire step, duckboards, a soldier standing on the boards, dugout, drainage sump, and parados. Numbered markers match the key below.</desc>
+        <defs>
+          <pattern id="earth-pixels" width="14" height="12" patternUnits="userSpaceOnUse">
+            <rect x="2" y="3" width="5" height="2" fill="#796748" opacity=".35"/>
+            <rect x="9" y="8" width="3" height="2" fill="#796748" opacity=".28"/>
+          </pattern>
+        </defs>
+        <rect width="760" height="380" fill="#c5c9a5"/>
+        <rect y="170" width="760" height="210" fill="#c2a678"/>
+        <rect y="170" width="760" height="210" fill="url(#earth-pixels)"/>
+        <path d="M0 150 H194 V287 H586 V150 H760 V168 H604 V305 H176 V168 H0 Z" fill="#61734e"/>
+        <rect x="30" y="130" width="132" height="20" fill="#d9b66f" stroke="#67563c" stroke-width="3"/>
+        <rect x="46" y="112" width="116" height="18" fill="#e4c884" stroke="#67563c" stroke-width="3"/>
+        <rect x="614" y="130" width="112" height="20" fill="#d9b66f" stroke="#67563c" stroke-width="3"/>
+        <rect x="630" y="112" width="96" height="18" fill="#e4c884" stroke="#67563c" stroke-width="3"/>
+        <rect x="621" y="193" width="112" height="58" fill="#7b6547" stroke="#4b4937" stroke-width="4"/>
+        <rect x="635" y="207" width="82" height="32" fill="#34443a"/>
+        <path d="M641 231 v-12 h12 v-7 h14 v-5 h18 v5 h16 v19z" fill="#a7a885"/>
+        <rect x="194" y="238" width="84" height="49" fill="#e4c884" stroke="#5d503b" stroke-width="3"/>
+        <path d="M278 278 H584" stroke="#cfb47d" stroke-width="12"/>
+        <path d="M290 270 h24 m8 0 h24 m8 0 h24 m8 0 h24 m8 0 h24 m8 0 h24 m8 0 h24" stroke="#46513d" stroke-width="5"/>
+        <path d="M275 321 q28 12 56 0 t56 0 t56 0 t56 0" fill="none" stroke="#648b87" stroke-width="7"/>
+        <circle cx="454" cy="202" r="14" fill="#39483c"/>
+        <path d="M454 216 v34 m0 -22 l-16 15 m16 -15 l16 15 m-16 7 l-14 17 m14 -17 l15 17" fill="none" stroke="#39483c" stroke-width="7" stroke-linecap="square"/>
+        <path d="M446 190 l8 -10 l8 10" fill="#b95d43"/>
+        <g fill="#b95d43" stroke="#fff0cf" stroke-width="2">
+          <rect x="160" y="145" width="18" height="18"/><rect x="223" y="225" width="18" height="18"/>
+          <rect x="396" y="256" width="18" height="18"/><rect x="659" y="180" width="18" height="18"/>
+          <rect x="394" y="314" width="18" height="18"/><rect x="595" y="150" width="18" height="18"/>
+          <rect x="122" y="102" width="18" height="18"/>
+        </g>
+        <g class="number-labels" fill="#fff0cf" font-family="Consolas, monospace" font-size="10" font-weight="700" text-anchor="middle">
+          <text x="169" y="158">01</text><text x="232" y="238">02</text>
+          <text x="405" y="269">03</text><text x="668" y="193">04</text>
+          <text x="403" y="327">05</text><text x="604" y="163">06</text>
+          <text x="131" y="115">07</text>
+        </g>
+        <text x="24" y="50">ENEMY / FRONT</text>
+        <text x="636" y="50">REAR / SUPPORT</text>
+        <text x="342" y="357" class="small">Not to scale · construction and protection varied</text>
+      </svg>
+      <div class="diagram-key" aria-label="Cross-section diagram key">
+        <span><b>01</b> Parapet</span><span><b>02</b> Fire step</span>
+        <span><b>03</b> Duckboards</span><span><b>04</b> Dugout</span>
+        <span><b>05</b> Sump / drain</span><span><b>06</b> Parados</span>
+        <span><b>07</b> Sandbags</span>
+      </div>`;
+
+    const stations = [
+      {
+        title: "The trench network",
+        nav: "Trench network",
+        kicker: "Stop 1 · The map table",
+        lead: "A trench was never just a ditch on its own. Look at the map first, then switch to the cross-section to see what the front line looked like from the side.",
+        content: `
+          <div class="diagram-frame">
+            <div class="diagram-tabs" role="tablist" aria-label="Trench diagram views">
+              <button class="diagram-tab" id="tab-aerial" role="tab" aria-selected="true" aria-controls="panel-aerial">From above</button>
+              <button class="diagram-tab" id="tab-section" role="tab" aria-selected="false" aria-controls="panel-section">From the side</button>
+            </div>
+            <div class="diagram-panel" id="panel-aerial" role="tabpanel" aria-labelledby="tab-aerial">${aerialDiagram}<p class="diagram-caption">The trenches zigzagged. That helped limit blast damage and stopped anyone who got in from firing down the whole line.</p></div>
+            <div class="diagram-panel" id="panel-section" role="tabpanel" aria-labelledby="tab-section" hidden>${sectionDiagram}<p class="diagram-caption">Duckboards lifted boots out of some of the mud. Water drained into a sump below; a dugout offered shelter, though it was not always safe.</p></div>
+          </div>
+          <div class="firestep-note"><strong>Worth a note</strong><span>Some soldiers slept on the firestep, ready to be woken and called into action.</span></div>
+          <div class="info-box">
+            <h3>Following the line</h3>
+            <ul>
+              <li><strong>Front line:</strong> the closest position to the enemy, watched by sentries and held by troops ready to fire or defend it.</li>
+              <li><strong>Communication trenches:</strong> the covered routes back and forth. Men used them to carry food, ammunition, messages and the wounded.</li>
+              <li><strong>Support and reserve lines:</strong> farther back, with supplies and fresh troops waiting to move up.</li>
+              <li><strong>No Man's Land:</strong> the exposed ground between opposing front lines, often torn up by shellfire and tangled with wire.</li>
+            </ul>
+          </div>`,
+        question: "Why use a communication trench?",
+        options: ["They connected the front with rear positions while offering some cover.", "They were a shortcut across No Man's Land.", "They were built only to drain rainwater."],
+        answer: 0,
+        success: "That's it. They gave men a more sheltered route between the front and the rear.",
+        clue: "Clue found: the rifle went back from the front, towards the reserve."
+      },
+      {
+        title: "What was carried into battle",
+        nav: "Weapons",
+        kicker: "The stores",
+        lead: "The rifle was only one part of the picture. These five weapons shaped what soldiers could do—and what they had to fear.",
+        content: `
+          <div class="info-box">
+            <h3>Weapons on the Western Front</h3>
+            <div class="weapon-grid">
+              <div class="weapon"><strong>Rifle</strong><span>Most infantrymen carried one. It was used to fire from the trench and, with a bayonet fixed, in close combat.</span></div>
+              <div class="weapon"><strong>Machine gun</strong><span>Its rapid fire made open ground perilous and helped defenders hold their positions.</span></div>
+              <div class="weapon"><strong>Artillery</strong><span>Field guns and heavy guns fired shells over long distances, trying to smash trenches, cut wire and weaken the defences.</span></div>
+              <div class="weapon"><strong>Hand grenade</strong><span>Useful in a narrow trench where there was little room to aim a rifle. Grenades were used in raids and close fighting.</span></div>
+              <div class="weapon"><strong>Poison gas</strong><span>Chlorine, phosgene and mustard gas were all used. Masks helped, but a warning could come late and the wind could shift.</span></div>
+            </div>
+          </div>`,
+        question: "Which weapon could pour rapid fire across open ground?",
+        options: ["A machine gun", "A hand grenade", "A gas mask"],
+        answer: 0,
+        success: "Yes. A machine gun could make crossing open ground deadly.",
+        clue: "Clue found: the rifle travelled along a covered route, not across No Man's Land."
+      },
+      {
+        title: "Going over the top",
+        nav: "Combat & attacks",
+        kicker: "The lookout",
+        lead: "Much of the fighting came from guns and artillery at a distance. But when men entered a trench, the fighting could become brutally close.",
+        content: `
+          <div class="info-box">
+            <h3>From a distance, and up close</h3>
+            <p>Rifles, machine guns and artillery struck at troops and positions from afar. Shelling could go on for hours or days, making even a short journey dangerous.</p>
+            <p>Patrols and raids brought men into the winding trenches, where grenades, rifles and bayonets were used at close quarters. Hand-to-hand fighting happened, but it was not the whole story; much of the fighting was done with guns and shells.</p>
+            <h3 style="margin-top:16px">An attack might go like this</h3>
+            <div class="timeline">
+              <article><strong>First, the guns</strong><span>Artillery battered the enemy line and tried to cut the wire. It did not always succeed.</span></article>
+              <article><strong>Then, the advance</strong><span>Infantry climbed out and crossed the open ground. In some attacks, shells rolled forward just ahead of them in a creeping barrage.</span></article>
+              <article><strong>If they got through</strong><span>Soldiers tried to take and hold the enemy trench. Mud, wire, lost messages and machine-gun fire could bring an advance to a halt.</span></article>
+            </div>
+            <p style="margin-top:12px">There was no guarantee it would go to plan. A bombardment might leave the wire untouched and the defenders waiting.</p>
+          </div>`,
+        question: "Why send a creeping barrage ahead of the infantry?",
+        options: ["Move shellfire ahead of advancing infantry to disrupt defenders.", "Lay a new communication trench across the battlefield.", "Signal that soldiers should retreat to reserve trenches."],
+        answer: 0,
+        success: "Right. It was meant to keep the defenders' heads down as the infantry advanced.",
+        clue: "Clue found: after the action, the rifle was carried back behind the front."
+      },
+      {
+        title: "The hard part of trench life",
+        nav: "Life in the trenches",
+        kicker: "The aid post",
+        lead: "Some dangers could kill in an instant. Others made every day miserable, and often the two went together.",
+        content: `
+          <div class="info-box">
+            <h3>What could kill or injure</h3>
+            <ul>
+              <li>Shells, shrapnel, snipers, machine-gun fire, and sudden raids could kill or injure.</li>
+              <li>Gas attacks could cause severe injury or death; alarms and masks offered limited protection.</li>
+              <li>Trench collapses, flooding, fire, and explosions were further hazards.</li>
+              <li>Wounds could become infected; disease spread in crowded conditions. Rats and lice were common, and lice could spread trench fever.</li>
+              <li>During attacks, troops crossing open ground faced wire, shell holes, and enemy fire.</li>
+            </ul>
+            <h3 style="margin-top:16px">What wore men down</h3>
+            <ul>
+              <li>Mud, water, cold, damp clothes, and poor sleep made rest difficult.</li>
+              <li>Rats, lice, smells, crowded dugouts, and limited washing undermined comfort and hygiene.</li>
+              <li>Noise, fear, monotony, and uncertainty placed soldiers under intense strain.</li>
+            </ul>
+            <p>Conditions changed with the weather, the sector and the unit. Men were rotated away from the front, but even a spell in reserve was no guarantee of safety.</p>
+          </div>`,
+        question: "Which one is a discomfort, rather than an immediate danger?",
+        options: ["Damp clothes and poor sleep", "A shell bursting nearby", "A machine-gun attack"],
+        answer: 0,
+        success: "That's right. Damp clothes and bad sleep could grind a man down, even without an attack.",
+        clue: "Clue found: the rifle passed the aid post and kept going towards the rear."
+      },
+      {
+        title: "The hours between the fighting",
+        nav: "Daily routine",
+        kicker: "The rest billet",
+        lead: "There was plenty of hard work and plenty of waiting. Being sent back from the line brought a bit of relief, but it was not a holiday.",
+        content: `
+          <div class="info-box">
+            <h3>A day was never just a day off</h3>
+            <p><strong>In the trench:</strong> standing sentry, watching the line, patching walls, laying duckboards, filling sandbags and clearing drains. Food, water, ammunition and messages all had to be carried up; the wounded had to be brought back. Much of the work was done at night. Some men slept on the firestep so they could be woken quickly if needed.</p>
+            <p><strong>Further back:</strong> a chance to sleep, wash, mend clothes, write home, read, talk, sing or play cards. There might be a service, a parcel from home—or more drills, kit inspections and work parties.</p>
+            <p>How long the rest lasted depended on the unit and what was happening. A quiet evening could end with orders to move up again.</p>
+          </div>`,
+        question: "Which job would you expect to find on a soldier's list?",
+        options: ["Repairing trench walls and clearing drains", "Practising a sea crossing", "Building permanent stone houses"],
+        answer: 0,
+        success: "Yes. Trenches needed constant repairs, especially after rain or shellfire.",
+        clue: "Last clue: the soldier had brought his kit back to the billet. The rifle rack was by the sleeping quarters."
+      }
+    ];
+
+    let activeStation = 0;
+    const completed = new Set();
+    const content = document.getElementById("station-content");
+    const stationList = document.getElementById("station-list");
+    const progressLabel = document.getElementById("progress-label");
+    const progressBar = document.getElementById("progress-bar");
+    const progressTrack = document.querySelector('[role="progressbar"]');
+
+    function renderNavigation() {
+      stationList.innerHTML = stations.map((station, index) => `
+        <button class="station-button ${index === activeStation ? "current" : ""} ${completed.has(index) ? "complete" : ""}"
+          type="button" data-station="${index}" aria-current="${index === activeStation ? "step" : "false"}">
+          <span class="station-dot" aria-hidden="true">${completed.has(index) ? "✓" : ["I", "II", "III", "IV", "V"][index]}</span>
+          <span class="station-name">${station.nav}</span>
+        </button>`).join("");
+      stationList.querySelectorAll("[data-station]").forEach(button => {
+        button.addEventListener("click", () => {
+          activeStation = Number(button.dataset.station);
+          renderNavigation();
+          renderStation();
+        });
+      });
+    }
+
+    function updateProgress() {
+      const count = completed.size;
+      progressLabel.textContent = `${count} of 5 clues`;
+      progressBar.style.width = `${count * 20}%`;
+      progressTrack.setAttribute("aria-valuenow", String(count));
+    }
+
+    function renderStation() {
+      const station = stations[activeStation];
+      content.innerHTML = `
+        <div class="station-kicker">${station.kicker}</div>
+        <h2>${station.title}</h2>
+        <p class="lead">${station.lead}</p>
+        ${station.content}
+        <div class="quiz">
+          <h3>${station.question}</h3>
+          <div class="choices">${station.options.map((option, index) =>
+            `<button class="choice" type="button" data-choice="${index}">${option}</button>`).join("")}</div>
+          <p class="feedback" id="feedback" role="status"></p>
+          <div id="clue-slot"></div>
+          <div class="station-footer" id="station-footer"></div>
+        </div>`;
+
+      if (activeStation === 0) setupDiagramTabs();
+      if (completed.has(activeStation)) showCompleteState();
+      else content.querySelectorAll("[data-choice]").forEach(button => {
+        button.addEventListener("click", () => answerQuestion(Number(button.dataset.choice)));
+      });
+    }
+
+    function setupDiagramTabs() {
+      const tabs = content.querySelectorAll(".diagram-tab");
+      const panels = content.querySelectorAll(".diagram-panel");
+      tabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => {
+          tabs.forEach((item, i) => item.setAttribute("aria-selected", String(i === index)));
+          panels.forEach((panel, i) => { panel.hidden = i !== index; });
+        });
+      });
+    }
+
+    function answerQuestion(choice) {
+      const station = stations[activeStation];
+      const feedback = document.getElementById("feedback");
+      if (choice !== station.answer) {
+        feedback.textContent = "Not quite. Review the field notes above and try again.";
+        feedback.className = "feedback try";
+        return;
+      }
+      completed.add(activeStation);
+      feedback.textContent = station.success;
+      feedback.className = "feedback good";
+      content.querySelectorAll("[data-choice]").forEach(button => { button.disabled = true; });
+      document.getElementById("clue-slot").innerHTML = `<div class="complete-message">${station.clue}</div>`;
+      const next = stations.findIndex((_, index) => !completed.has(index));
+      const footer = document.getElementById("station-footer");
+      if (completed.size === stations.length) {
+        footer.innerHTML = `<button class="button button-primary" type="button" id="reveal">Find the rifle →</button>`;
+        document.getElementById("reveal").addEventListener("click", renderFinale);
+      } else {
+        footer.innerHTML = `<button class="button button-quiet" type="button" id="next">${next > activeStation ? "Next station →" : "Continue the search →"}</button>`;
+        document.getElementById("next").addEventListener("click", () => {
+          activeStation = next;
+          renderNavigation();
+          renderStation();
+        });
+      }
+      renderNavigation();
+      updateProgress();
+    }
+
+    function showCompleteState() {
+      const station = stations[activeStation];
+      const feedback = document.getElementById("feedback");
+      feedback.textContent = station.success;
+      feedback.className = "feedback good";
+      content.querySelectorAll("[data-choice]").forEach(button => { button.disabled = true; });
+      document.getElementById("clue-slot").innerHTML = `<div class="complete-message">${station.clue}</div>`;
+      const next = stations.findIndex((_, index) => !completed.has(index));
+      const footer = document.getElementById("station-footer");
+      if (completed.size === stations.length) {
+        footer.innerHTML = `<button class="button button-primary" type="button" id="reveal">Find the rifle →</button>`;
+        document.getElementById("reveal").addEventListener("click", renderFinale);
+      } else {
+        footer.innerHTML = `<button class="button button-quiet" type="button" id="next">Go to next clue →</button>`;
+        document.getElementById("next").addEventListener("click", () => {
+          activeStation = next;
+          renderNavigation();
+          renderStation();
+        });
+      }
+    }
+
+    function renderFinale() {
+      content.innerHTML = `
+        <div class="finale">
+          <div class="badge" aria-hidden="true">✓</div>
+          <div class="station-kicker">Investigation complete</div>
+          <h2>Back at the billet</h2>
+          <p>There it is: in the unit rack beside the sleeping quarters. It must have come back with the soldier's kit, carried along the communication trench instead of across No Man's Land.</p>
+          <p>Following one missing rifle has taken you through the trench lines, the weapons and attacks, the dangers of daily life, and the chores and small comforts that filled the hours.</p>
+          <button class="button button-primary" id="replay">Follow the trail again</button>
+        </div>`;
+      document.getElementById("replay").addEventListener("click", () => {
+        completed.clear();
+        activeStation = 0;
+        renderNavigation();
+        updateProgress();
+        renderStation();
+      });
+    }
+
+    document.getElementById("begin").addEventListener("click", () => {
+      document.getElementById("welcome").hidden = true;
+      document.getElementById("game").classList.add("active");
+      renderNavigation();
+      renderStation();
+      updateProgress();
+      content.querySelector("button")?.focus();
+    });
+  </script>
+</body>
+</html>
