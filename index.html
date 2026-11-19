@@ -138,9 +138,9 @@
     .hero .button { position: relative; z-index: 2; }
     .hero > p:not(.hero-illustration) { max-width: 410px; }
     .hero::before { content: none; }
-    .intro h2, .section-title, .station-content h2, .info-box h3, .quiz h3 { font-family: "Lucida Console", Monaco, Consolas, "Courier New", monospace; }
+    .intro h2, .section-title, .station-content h2, .info-box h3, .quiz h3 { font-family: Georgia, "Times New Roman", serif; }
     .game-top { background: #202b26; border-bottom: 3px solid #89906d; }
-    .game-top p, .sidebar-label, .station-kicker { font-family: Consolas, "Courier New", monospace; }
+    .game-top p, .sidebar-label, .station-kicker { font-family: Arial, Helvetica, sans-serif; }
     .game-top p::before { content: "■ "; color: #e4b75a; }
     .game-body { background: #d7d2ba; }
     .sidebar { background: #c8c8ad; border-right: 2px solid #898f73; }
@@ -150,7 +150,7 @@
     .station-button:hover { background: #e2e0c8; }
     .station-button.current { border-color: #596e5d; background: #edf0d9; box-shadow: inset 4px 0 #b95d43, 2px 2px 0 #8e9075; }
     .station-button.complete .station-dot { color: #17231f; background: #e4b75a; border-color: #74683f; }
-    .station-dot { flex-basis: 30px; height: 30px; border-radius: 2px; color: #e8e4c9; background: #334940; border: 1px solid #627567; font: 700 .72rem Consolas, monospace; }
+    .station-dot { flex-basis: 30px; height: 30px; border-radius: 2px; color: #e8e4c9; background: #334940; border: 1px solid #627567; font: 700 .72rem Arial, Helvetica, sans-serif; }
     .station-name { font: 700 .82rem Consolas, "Courier New", monospace; }
     .sidebar-note { padding: 12px; border: 1px solid #9ea084; background: #d7d6bd; font-style: normal; font-size: .82rem; }
     .station-content { background: #e1ddc6; }
@@ -332,7 +332,7 @@
     .source-note { color: #d2c69f; background: #30382a; border-top-color: #897a51; }
     .creator-credit { margin: 12px 8px 0; color: #c1b58e; text-align: right; font: .72rem/1.5 Consolas, "Courier New", monospace; }
     body { font-family: Georgia, "Times New Roman", serif; }
-    .brand, .date-stamp, .eyebrow, .button, .game-top p, .sidebar-label, .station-name, .station-kicker, .diagram-tab, .diagram-caption, .diagram-key, .creator-credit { font-family: Consolas, "Courier New", monospace; }
+    .brand, .date-stamp, .eyebrow, .button, .game-top p, .sidebar-label, .station-name, .station-kicker, .diagram-tab, .diagram-caption, .diagram-key, .creator-credit { font-family: Arial, Helvetica, sans-serif; }
     .brand { letter-spacing: .08em; }
     .hero h1, .intro h2, .station-content h2, .info-box h3, .quiz h3, .finale h2 { letter-spacing: normal; }
     .hero h1 { font-weight: 700; }
@@ -341,12 +341,15 @@
     .quiz { border-top-style: solid; }
     .station-kicker { letter-spacing: .06em; text-transform: none; }
     .firestep-note { border-radius: 2px 5px 3px 4px; }
-    .firestep-note strong { font-size: .9rem; font-weight: 600; letter-spacing: 0; text-transform: none; }
+    .firestep-note strong { font: 600 .9rem Arial, Helvetica, sans-serif; letter-spacing: 0; text-transform: none; }
     .source-note { font-size: .82rem; }
     body * { font-family: inherit; }
-    h1, h2, h3, .brand, .date-stamp, .button, .station-name, .station-kicker,
+    h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; }
+    .brand, .date-stamp, .button, .station-name, .station-kicker, .eyebrow,
     .game-top p, .sidebar-label, .diagram-tab, .diagram-caption, .diagram-key,
-    .creator-credit, .source-note { font-family: Consolas, "Courier New", monospace; }
+    .creator-credit, .source-note, .feedback, .timeline strong, .diagram-panel svg text {
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
     @media (max-width: 520px) {
       .hero-illustration { right: 0; bottom: 10px; width: 60%; height: auto; opacity: .48; }
@@ -369,32 +372,32 @@
             <rect x="14" y="8" width="332" height="184" fill="#c8ba91" stroke="#8f805c" stroke-width="3"/>
             <image href="rifle-reference.png" x="20" y="11" width="320" height="181" preserveAspectRatio="xMidYMid meet"/>
           </svg>
-          <div class="eyebrow">Western Front · Field inquiry 1</div>
+          <div class="eyebrow">Western Front · 1916</div>
           <h1>Where's my<br>rifle?</h1>
-          <p>Relief is due. One man is missing a rifle, and nobody remembers taking it off the line. Start with the trench map and see where the trail leads.</p>
-          <button class="button button-primary" id="begin">Follow the clues <span aria-hidden="true">→</span></button>
+          <p>A soldier has come back from the line without his rifle. The relief party is due, and no one knows where it was left. Use the map and notes to trace its route.</p>
+          <button class="button button-primary" id="begin">Start the search <span aria-hidden="true">→</span></button>
         </div>
         <div class="intro">
           <div>
             <h2>The situation</h2>
-            <p>It is 1916. The front line is changing hands, but the work in the trenches goes on: supplies forward, wounded back, and every piece of kit accounted for.</p>
+            <p>The missing-rifle story is fictional. The trench layout, equipment and details of daily life are based on the Western Front.</p>
           </div>
           <div class="briefing">
             <strong>A note before you start</strong>
-            <p>The trail is made up, but the trenches, weapons, dangers and daily routines are based on life on the Western Front.</p>
+            <p>The missing rifle is fictional. The trench layouts and details of daily life are based on the Western Front.</p>
           </div>
         </div>
       </section>
 
       <section class="game" id="game" aria-label="Missing rifle investigation">
         <div class="game-top">
-          <p>Following the rifle's trail</p>
+          <p>Missing rifle · field notes</p>
         </div>
         <div class="game-body">
           <aside class="sidebar">
             <p class="sidebar-label">Stops along the way</p>
             <nav class="station-list" id="station-list" aria-label="Investigation stations"></nav>
-            <p class="sidebar-note">Each stop turns up another clue. Take a look around before you move on.</p>
+            <p class="sidebar-note">Read the notes, answer the question, then follow the next lead.</p>
           </aside>
           <section class="station-content" id="station-content" aria-live="polite"></section>
         </div>
@@ -515,124 +518,122 @@
         title: "The trench network",
         nav: "Trench network",
         kicker: "Stop 1 · The map table",
-        lead: "A trench was never just a ditch on its own. Look at the map first, then switch to the cross-section to see what the front line looked like from the side.",
+        lead: "Start with the plan of the trenches. Switch to the side view to see how the front line was built.",
         content: `
           <div class="diagram-frame">
             <div class="diagram-tabs" role="tablist" aria-label="Trench diagram views">
               <button class="diagram-tab" id="tab-aerial" role="tab" aria-selected="true" aria-controls="panel-aerial">From above</button>
               <button class="diagram-tab" id="tab-section" role="tab" aria-selected="false" aria-controls="panel-section">From the side</button>
             </div>
-            <div class="diagram-panel" id="panel-aerial" role="tabpanel" aria-labelledby="tab-aerial">${aerialDiagram}<p class="diagram-caption">The trenches zigzagged. That helped limit blast damage and stopped anyone who got in from firing down the whole line.</p></div>
-            <div class="diagram-panel" id="panel-section" role="tabpanel" aria-labelledby="tab-section" hidden>${sectionDiagram}<p class="diagram-caption">Duckboards lifted boots out of some of the mud. Water drained into a sump below; a dugout offered shelter, though it was not always safe.</p></div>
+            <div class="diagram-panel" id="panel-aerial" role="tabpanel" aria-labelledby="tab-aerial">${aerialDiagram}<p class="diagram-caption">The bends helped stop a shell blast from sweeping along the whole trench. They also made it harder to see far down the line.</p></div>
+            <div class="diagram-panel" id="panel-section" role="tabpanel" aria-labelledby="tab-section" hidden>${sectionDiagram}<p class="diagram-caption">Duckboards kept some of the mud off a soldier's boots. Water collected in sumps; dugouts gave shelter, but could still be hit or flooded.</p></div>
           </div>
-          <div class="firestep-note"><strong>Worth a note</strong><span>Some soldiers slept on the firestep, ready to be woken and called into action.</span></div>
+          <div class="firestep-note"><strong>At night</strong><span>Some men slept on the firestep so they could be woken quickly if needed.</span></div>
           <div class="info-box">
             <h3>Following the line</h3>
             <ul>
-              <li><strong>Front line:</strong> the closest position to the enemy, watched by sentries and held by troops ready to fire or defend it.</li>
-              <li><strong>Communication trenches:</strong> the covered routes back and forth. Men used them to carry food, ammunition, messages and the wounded.</li>
-              <li><strong>Support and reserve lines:</strong> farther back, with supplies and fresh troops waiting to move up.</li>
-              <li><strong>No Man's Land:</strong> the exposed ground between opposing front lines, often torn up by shellfire and tangled with wire.</li>
+              <li><strong>Front line:</strong> the trench closest to the enemy, watched by sentries and held by infantry.</li>
+              <li><strong>Communication trenches:</strong> routes between the front and rear. Supplies went up them; messages and wounded men came back.</li>
+              <li><strong>Support and reserve lines:</strong> positions farther back, where troops and supplies could wait before moving forward.</li>
+              <li><strong>No Man's Land:</strong> the open ground between the opposing front lines, often broken by shell holes and crossed by wire.</li>
             </ul>
           </div>`,
         question: "Why use a communication trench?",
         options: ["They connected the front with rear positions while offering some cover.", "They were a shortcut across No Man's Land.", "They were built only to drain rainwater."],
         answer: 0,
-        success: "That's it. They gave men a more sheltered route between the front and the rear.",
-        clue: "Clue found: the rifle went back from the front, towards the reserve."
+        success: "Correct. They linked the front with positions farther back.",
+        clue: "The rifle was moving away from the front, towards the reserve."
       },
       {
-        title: "What was carried into battle",
+        title: "Weapons",
         nav: "Weapons",
         kicker: "The stores",
-        lead: "The rifle was only one part of the picture. These five weapons shaped what soldiers could do—and what they had to fear.",
+        lead: "The rifle was standard kit, but it was far from the only weapon in use.",
         content: `
           <div class="info-box">
             <h3>Weapons on the Western Front</h3>
             <div class="weapon-grid">
-              <div class="weapon"><strong>Rifle</strong><span>Most infantrymen carried one. It was used to fire from the trench and, with a bayonet fixed, in close combat.</span></div>
-              <div class="weapon"><strong>Machine gun</strong><span>Its rapid fire made open ground perilous and helped defenders hold their positions.</span></div>
-              <div class="weapon"><strong>Artillery</strong><span>Field guns and heavy guns fired shells over long distances, trying to smash trenches, cut wire and weaken the defences.</span></div>
-              <div class="weapon"><strong>Hand grenade</strong><span>Useful in a narrow trench where there was little room to aim a rifle. Grenades were used in raids and close fighting.</span></div>
-              <div class="weapon"><strong>Poison gas</strong><span>Chlorine, phosgene and mustard gas were all used. Masks helped, but a warning could come late and the wind could shift.</span></div>
+              <div class="weapon"><strong>Rifle</strong><span>Most infantrymen carried one. A bayonet could be fixed to it for close fighting.</span></div>
+              <div class="weapon"><strong>Machine gun</strong><span>Its rapid fire made crossing open ground extremely dangerous.</span></div>
+              <div class="weapon"><strong>Artillery</strong><span>Guns fired shells at trenches, troops and wire from miles away.</span></div>
+              <div class="weapon"><strong>Hand grenade</strong><span>Used in trench raids and close fighting, where there was little room to aim a rifle.</span></div>
+              <div class="weapon"><strong>Gas</strong><span>Chlorine, phosgene and mustard gas were used. Masks helped, but gave no guarantee of safety.</span></div>
             </div>
           </div>`,
         question: "Which weapon could pour rapid fire across open ground?",
         options: ["A machine gun", "A hand grenade", "A gas mask"],
         answer: 0,
-        success: "Yes. A machine gun could make crossing open ground deadly.",
-        clue: "Clue found: the rifle travelled along a covered route, not across No Man's Land."
+        success: "Correct. Machine guns made an advance across open ground costly.",
+        clue: "The rifle went along a communication trench, not across No Man's Land."
       },
       {
-        title: "Going over the top",
+        title: "Attacks and raids",
         nav: "Combat & attacks",
         kicker: "The lookout",
-        lead: "Much of the fighting came from guns and artillery at a distance. But when men entered a trench, the fighting could become brutally close.",
+        lead: "Attacks meant crossing open ground under fire. Raids brought fighting into the trenches themselves.",
         content: `
           <div class="info-box">
-            <h3>From a distance, and up close</h3>
-            <p>Rifles, machine guns and artillery struck at troops and positions from afar. Shelling could go on for hours or days, making even a short journey dangerous.</p>
-            <p>Patrols and raids brought men into the winding trenches, where grenades, rifles and bayonets were used at close quarters. Hand-to-hand fighting happened, but it was not the whole story; much of the fighting was done with guns and shells.</p>
-            <h3 style="margin-top:16px">An attack might go like this</h3>
+            <h3>How an attack could unfold</h3>
+            <p>Artillery might fire for hours before the infantry left the trench. Patrols and raids were smaller operations, often carried out at night.</p>
             <div class="timeline">
-              <article><strong>First, the guns</strong><span>Artillery battered the enemy line and tried to cut the wire. It did not always succeed.</span></article>
-              <article><strong>Then, the advance</strong><span>Infantry climbed out and crossed the open ground. In some attacks, shells rolled forward just ahead of them in a creeping barrage.</span></article>
-              <article><strong>If they got through</strong><span>Soldiers tried to take and hold the enemy trench. Mud, wire, lost messages and machine-gun fire could bring an advance to a halt.</span></article>
+              <article><strong>Bombardment</strong><span>Artillery targeted trenches and wire. It often failed to clear a path.</span></article>
+              <article><strong>Advance</strong><span>Infantry crossed the open ground. Sometimes a creeping barrage moved ahead of them.</span></article>
+              <article><strong>At the enemy line</strong><span>Those who reached it tried to take and hold the trench. Wire, mud and gunfire could stop them.</span></article>
             </div>
-            <p style="margin-top:12px">There was no guarantee it would go to plan. A bombardment might leave the wire untouched and the defenders waiting.</p>
+            <p style="margin-top:12px">A bombardment could leave the wire uncut and the defenders ready.</p>
           </div>`,
         question: "Why send a creeping barrage ahead of the infantry?",
         options: ["Move shellfire ahead of advancing infantry to disrupt defenders.", "Lay a new communication trench across the battlefield.", "Signal that soldiers should retreat to reserve trenches."],
         answer: 0,
-        success: "Right. It was meant to keep the defenders' heads down as the infantry advanced.",
-        clue: "Clue found: after the action, the rifle was carried back behind the front."
+        success: "Correct. It was meant to suppress defenders as the infantry advanced.",
+        clue: "After the fighting, the rifle was carried back behind the front."
       },
       {
-        title: "The hard part of trench life",
+        title: "Living in the trenches",
         nav: "Life in the trenches",
         kicker: "The aid post",
-        lead: "Some dangers could kill in an instant. Others made every day miserable, and often the two went together.",
+        lead: "Shellfire was only one problem. Mud, cold, poor sleep and illness wore men down day after day.",
         content: `
           <div class="info-box">
-            <h3>What could kill or injure</h3>
+            <h3>Dangers</h3>
             <ul>
-              <li>Shells, shrapnel, snipers, machine-gun fire, and sudden raids could kill or injure.</li>
-              <li>Gas attacks could cause severe injury or death; alarms and masks offered limited protection.</li>
-              <li>Trench collapses, flooding, fire, and explosions were further hazards.</li>
-              <li>Wounds could become infected; disease spread in crowded conditions. Rats and lice were common, and lice could spread trench fever.</li>
-              <li>During attacks, troops crossing open ground faced wire, shell holes, and enemy fire.</li>
+              <li>Shells, shrapnel, snipers and machine-gun fire killed and wounded men.</li>
+              <li>Gas alarms and masks helped, but an attack could still catch soldiers out.</li>
+              <li>Trenches could collapse or flood. Fires and explosions were another risk.</li>
+              <li>Infection and disease spread in crowded conditions; rats and lice were common.</li>
+              <li>During an attack, soldiers crossing open ground faced wire and enemy fire.</li>
             </ul>
-            <h3 style="margin-top:16px">What wore men down</h3>
+            <h3 style="margin-top:16px">Daily discomforts</h3>
             <ul>
               <li>Mud, water, cold, damp clothes, and poor sleep made rest difficult.</li>
-              <li>Rats, lice, smells, crowded dugouts, and limited washing undermined comfort and hygiene.</li>
-              <li>Noise, fear, monotony, and uncertainty placed soldiers under intense strain.</li>
+              <li>Rats, lice, bad smells and limited washing were part of everyday life.</li>
+              <li>Noise, long waits and not knowing what would happen next took their toll.</li>
             </ul>
-            <p>Conditions changed with the weather, the sector and the unit. Men were rotated away from the front, but even a spell in reserve was no guarantee of safety.</p>
+            <p>Conditions varied by place, weather and unit. Men were moved away from the front in turn, though reserve areas could still come under fire.</p>
           </div>`,
         question: "Which one is a discomfort, rather than an immediate danger?",
         options: ["Damp clothes and poor sleep", "A shell bursting nearby", "A machine-gun attack"],
         answer: 0,
-        success: "That's right. Damp clothes and bad sleep could grind a man down, even without an attack.",
-        clue: "Clue found: the rifle passed the aid post and kept going towards the rear."
+        success: "Correct. Damp clothes and poor sleep were a daily hardship, not an attack.",
+        clue: "The rifle passed the aid post and continued towards the rear."
       },
       {
-        title: "The hours between the fighting",
+        title: "A spell out of the line",
         nav: "Daily routine",
         kicker: "The rest billet",
-        lead: "There was plenty of hard work and plenty of waiting. Being sent back from the line brought a bit of relief, but it was not a holiday.",
+        lead: "Being sent back from the front gave men a chance to rest. There was still plenty of work to do.",
         content: `
           <div class="info-box">
-            <h3>A day was never just a day off</h3>
-            <p><strong>In the trench:</strong> standing sentry, watching the line, patching walls, laying duckboards, filling sandbags and clearing drains. Food, water, ammunition and messages all had to be carried up; the wounded had to be brought back. Much of the work was done at night. Some men slept on the firestep so they could be woken quickly if needed.</p>
-            <p><strong>Further back:</strong> a chance to sleep, wash, mend clothes, write home, read, talk, sing or play cards. There might be a service, a parcel from home—or more drills, kit inspections and work parties.</p>
-            <p>How long the rest lasted depended on the unit and what was happening. A quiet evening could end with orders to move up again.</p>
+            <h3>Work and rest</h3>
+            <p><strong>At the front:</strong> men stood sentry, repaired walls, laid duckboards and cleared drains. Food, water and ammunition had to be carried up; the wounded brought back. Much of this work happened at night.</p>
+            <p><strong>Behind the line:</strong> there might be time to wash, mend clothes, write home, read or play cards. There could also be drills, inspections and work parties.</p>
+            <p>Rest periods varied. Orders could send a unit back to the front with little warning.</p>
           </div>`,
         question: "Which job would you expect to find on a soldier's list?",
         options: ["Repairing trench walls and clearing drains", "Practising a sea crossing", "Building permanent stone houses"],
         answer: 0,
-        success: "Yes. Trenches needed constant repairs, especially after rain or shellfire.",
-        clue: "Last clue: the soldier had brought his kit back to the billet. The rifle rack was by the sleeping quarters."
+        success: "Correct. Trenches needed repairs, especially after rain or shellfire.",
+        clue: "The soldier brought his kit back to the billet. The rifle rack stood by the sleeping quarters."
       }
     ];
 
@@ -695,7 +696,7 @@
       const station = stations[activeStation];
       const feedback = document.getElementById("feedback");
       if (choice !== station.answer) {
-        feedback.textContent = "Not quite. Review the field notes above and try again.";
+        feedback.textContent = "Not quite. Have another look at the notes.";
         feedback.className = "feedback try";
         return;
       }
@@ -746,11 +747,10 @@
       content.innerHTML = `
         <div class="finale">
           <div class="badge" aria-hidden="true">✓</div>
-          <div class="station-kicker">Investigation complete</div>
+          <div class="station-kicker">Search complete</div>
           <h2>Back at the billet</h2>
-          <p>There it is: in the unit rack beside the sleeping quarters. It must have come back with the soldier's kit, carried along the communication trench instead of across No Man's Land.</p>
-          <p>Following one missing rifle has taken you through the trench lines, the weapons and attacks, the dangers of daily life, and the chores and small comforts that filled the hours.</p>
-          <button class="button button-primary" id="replay">Follow the trail again</button>
+          <p>There it is, in the rack by the sleeping quarters. It must have come back with the soldier's kit along the communication trench.</p>
+          <button class="button button-primary" id="replay">Play again</button>
         </div>`;
       document.getElementById("replay").addEventListener("click", () => {
         completed.clear();
