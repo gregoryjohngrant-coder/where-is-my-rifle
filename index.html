@@ -73,9 +73,6 @@
     .game.active { display: block; }
     .game-top { padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; gap: 18px; color: #f4e8ca; background: var(--olive-dark); border-bottom: 4px double #b8975b; }
     .game-top p { margin: 0; font: 700 .78rem "Lucida Console", Monaco, Consolas, "Courier New", monospace; letter-spacing: .1em; text-transform: uppercase; }
-    .progress-wrap { display: flex; align-items: center; gap: 12px; min-width: min(330px, 50%); font: 700 .78rem "Lucida Console", Monaco, Consolas, "Courier New", monospace; }
-    .progress-track { height: 9px; flex: 1; overflow: hidden; border: 1px solid #d2bd8c; background: #242d20; }
-    .progress-bar { height: 100%; width: 0; background: repeating-linear-gradient(135deg, #c79a54 0 6px, #dab66f 6px 12px); transition: width .3s ease; }
     .game-body { display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 590px; background: #f1e5c9; }
     .sidebar { padding: 24px 18px; background: #e5d6b3; border-right: 1px solid #a88c5a; }
     .sidebar-label { margin: 0 0 13px; font: 700 .72rem "Lucida Console", Monaco, Consolas, "Courier New", monospace; letter-spacing: .12em; text-transform: uppercase; color: var(--rust); }
@@ -141,11 +138,8 @@
     .hero::before { content: none; }
     .intro h2, .section-title, .station-content h2, .info-box h3, .quiz h3 { font-family: "Lucida Console", Monaco, Consolas, "Courier New", monospace; }
     .game-top { background: #202b26; border-bottom: 3px solid #89906d; }
-    .game-top p, .progress-wrap, .sidebar-label, .station-kicker { font-family: Consolas, "Courier New", monospace; }
+    .game-top p, .sidebar-label, .station-kicker { font-family: Consolas, "Courier New", monospace; }
     .game-top p::before { content: "■ "; color: #e4b75a; }
-    .progress-wrap { color: #e5dfc4; }
-    .progress-track { border-color: #9ca280; background: #17231f; }
-    .progress-bar { background: repeating-linear-gradient(90deg, #e4b75a 0 8px, #c99a4e 8px 11px); }
     .game-body { background: #d7d2ba; }
     .sidebar { background: #c8c8ad; border-right: 2px solid #898f73; }
     .sidebar-label { padding-bottom: 10px; border-bottom: 1px solid #9ea084; }
@@ -211,7 +205,6 @@
       .station-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .sidebar-note { display: none; }
       .game-top { align-items: flex-start; flex-direction: column; }
-      .progress-wrap { min-width: 100%; }
       .timeline { grid-template-columns: 1fr; }
     }
     @media (max-width: 460px) {
@@ -290,9 +283,6 @@
     .briefing strong { color: #704b34; }
     .game-top { color: #e0d4b2; background: #30382a; border-bottom-color: #897a51; }
     .game-top p::before { color: #ad945a; }
-    .progress-wrap { color: #ddd1ad; }
-    .progress-track { border-color: #95845c; background: #24281f; }
-    .progress-bar { background: repeating-linear-gradient(90deg, #a68b55 0 8px, #b9a16c 8px 11px); }
     .game-body, .station-content { background: #c4b891; }
     .sidebar { background: #b2a57c; border-right-color: #887b58; }
     .sidebar-label { color: #704b34; border-bottom-color: #8e825d; }
@@ -340,7 +330,7 @@
     .source-note { color: #d2c69f; background: #30382a; border-top-color: #897a51; }
     .creator-credit { margin: 12px 8px 0; color: #c1b58e; text-align: right; font: .72rem/1.5 Consolas, "Courier New", monospace; }
     body { font-family: Consolas, "Courier New", monospace; }
-    .brand, .date-stamp, .eyebrow, .button, .game-top p, .progress-wrap, .sidebar-label, .station-name, .station-kicker, .diagram-tab, .diagram-caption, .diagram-key, .creator-credit { font-family: Consolas, "Courier New", monospace; }
+    .brand, .date-stamp, .eyebrow, .button, .game-top p, .sidebar-label, .station-name, .station-kicker, .diagram-tab, .diagram-caption, .diagram-key, .creator-credit { font-family: Consolas, "Courier New", monospace; }
     .brand { letter-spacing: .08em; }
     .hero h1, .intro h2, .station-content h2, .info-box h3, .quiz h3, .finale h2 { letter-spacing: normal; }
     .hero h1 { font-weight: 700; }
@@ -394,12 +384,6 @@
       <section class="game" id="game" aria-label="Missing rifle investigation">
         <div class="game-top">
           <p>Following the rifle's trail</p>
-          <div class="progress-wrap" aria-label="Investigation progress">
-            <span id="progress-label">0 of 5 clues</span>
-            <div class="progress-track" role="progressbar" aria-label="Clues collected" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0">
-              <div class="progress-bar" id="progress-bar"></div>
-            </div>
-          </div>
         </div>
         <div class="game-body">
           <aside class="sidebar">
@@ -651,9 +635,6 @@
     const completed = new Set();
     const content = document.getElementById("station-content");
     const stationList = document.getElementById("station-list");
-    const progressLabel = document.getElementById("progress-label");
-    const progressBar = document.getElementById("progress-bar");
-    const progressTrack = document.querySelector('[role="progressbar"]');
 
     function renderNavigation() {
       stationList.innerHTML = stations.map((station, index) => `
@@ -669,13 +650,6 @@
           renderStation();
         });
       });
-    }
-
-    function updateProgress() {
-      const count = completed.size;
-      progressLabel.textContent = `${count} of 5 clues`;
-      progressBar.style.width = `${count * 20}%`;
-      progressTrack.setAttribute("aria-valuenow", String(count));
     }
 
     function renderStation() {
@@ -739,7 +713,6 @@
         });
       }
       renderNavigation();
-      updateProgress();
     }
 
     function showCompleteState() {
@@ -778,7 +751,6 @@
         completed.clear();
         activeStation = 0;
         renderNavigation();
-        updateProgress();
         renderStation();
       });
     }
@@ -788,7 +760,6 @@
       document.getElementById("game").classList.add("active");
       renderNavigation();
       renderStation();
-      updateProgress();
       content.querySelector("button")?.focus();
     });
   </script>
