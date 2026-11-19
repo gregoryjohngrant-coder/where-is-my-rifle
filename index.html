@@ -660,6 +660,11 @@
 
     function renderStation() {
       const station = stations[activeStation];
+      const optionOrder = station.options.map((_, index) => index);
+      for (let index = optionOrder.length - 1; index > 0; index--) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [optionOrder[index], optionOrder[swapIndex]] = [optionOrder[swapIndex], optionOrder[index]];
+      }
       content.innerHTML = `
         <div class="station-kicker">${station.kicker}</div>
         <h2>${station.title}</h2>
@@ -667,8 +672,8 @@
         ${station.content}
         <div class="quiz">
           <h3>${station.question}</h3>
-          <div class="choices">${station.options.map((option, index) =>
-            `<button class="choice" type="button" data-choice="${index}">${option}</button>`).join("")}</div>
+          <div class="choices">${optionOrder.map(index =>
+            `<button class="choice" type="button" data-choice="${index}">${station.options[index]}</button>`).join("")}</div>
           <p class="feedback" id="feedback" role="status"></p>
           <div id="clue-slot"></div>
           <div class="station-footer" id="station-footer"></div>
