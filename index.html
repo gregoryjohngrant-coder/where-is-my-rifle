@@ -639,6 +639,7 @@
 
     let activeStation = 0;
     const completed = new Set();
+    const lastAnswerPositions = new Map();
     const content = document.getElementById("station-content");
     const stationList = document.getElementById("station-list");
 
@@ -665,6 +666,12 @@
         const swapIndex = Math.floor(Math.random() * (index + 1));
         [optionOrder[index], optionOrder[swapIndex]] = [optionOrder[swapIndex], optionOrder[index]];
       }
+      const answerPosition = optionOrder.indexOf(station.answer);
+      if (answerPosition === lastAnswerPositions.get(activeStation)) {
+        const nextPosition = (answerPosition + 1 + Math.floor(Math.random() * (optionOrder.length - 1))) % optionOrder.length;
+        [optionOrder[answerPosition], optionOrder[nextPosition]] = [optionOrder[nextPosition], optionOrder[answerPosition]];
+      }
+      lastAnswerPositions.set(activeStation, optionOrder.indexOf(station.answer));
       content.innerHTML = `
         <div class="station-kicker">${station.kicker}</div>
         <h2>${station.title}</h2>
