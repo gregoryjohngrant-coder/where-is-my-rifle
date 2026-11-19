@@ -106,6 +106,7 @@
     .feedback.try { color: #92533a; }
     .station-footer { margin-top: 18px; display: flex; justify-content: flex-end; }
     .complete-message { margin-top: 20px; padding: 14px 16px; border-left: 3px solid var(--olive); background: #e5e6cf; border-radius: 2px; font-style: italic; }
+    .reset-notice { margin: 0 0 12px; padding: 10px 14px; color: #342f24; background: #e6d3aa; border-left: 4px solid var(--rust); }
 
     .diagram-frame { margin: 20px 0; border: 1px solid #a68d5e; border-radius: 2px; overflow: hidden; background: #f8efd9; box-shadow: inset 0 0 0 4px #eddfbd; }
     .diagram-tabs { display: flex; gap: 0; border-bottom: 1px solid #a68d5e; background: #e5d6b3; }
@@ -365,6 +366,7 @@
 
     <main class="frame">
       <section class="welcome" id="welcome">
+        <p class="reset-notice" id="reset-notice" role="status" hidden>Too many wrong answers. The search has been reset; start again.</p>
         <div class="hero">
           <svg class="hero-illustration" viewBox="0 0 360 200" role="img" aria-labelledby="rifle-title rifle-description">
             <title id="rifle-title">P.14 service rifle reference illustration</title>
@@ -384,7 +386,7 @@
           </div>
           <div class="briefing">
             <strong>A note before you start</strong>
-            <p>The missing rifle is fictional. The trench layouts and details of daily life are based on the Western Front.</p>
+            <p>The missing rifle is fictional. The trench layouts and details of daily life are based on the Western Front. You get one wrong answer per question; a second mistake resets the search.</p>
           </div>
         </div>
       </section>
@@ -539,7 +541,7 @@
             </ul>
           </div>`,
         question: "Why use a communication trench?",
-        options: ["They connected the front with rear positions while offering some cover.", "They were a shortcut across No Man's Land.", "They were built only to drain rainwater."],
+        options: ["They linked the front and rear along a more sheltered route.", "They linked opposing front lines across No Man's Land.", "They were built chiefly to drain water away.", "They gave machine-gun crews a raised firing position.", "They ran parallel to the front trench as a second firing line."],
         answer: 0,
         success: "Correct. They linked the front with positions farther back.",
         clue: "The rifle was moving away from the front, towards the reserve."
@@ -561,7 +563,7 @@
             </div>
           </div>`,
         question: "Which weapon could pour rapid fire across open ground?",
-        options: ["A machine gun", "A hand grenade", "A gas mask"],
+        options: ["A machine gun", "A field gun", "A trench mortar", "A hand grenade", "A bayonet"],
         answer: 0,
         success: "Correct. Machine guns made an advance across open ground costly.",
         clue: "The rifle went along a communication trench, not across No Man's Land."
@@ -583,7 +585,7 @@
             <p style="margin-top:12px">A bombardment could leave the wire uncut and the defenders ready.</p>
           </div>`,
         question: "Why send a creeping barrage ahead of the infantry?",
-        options: ["Move shellfire ahead of advancing infantry to disrupt defenders.", "Lay a new communication trench across the battlefield.", "Signal that soldiers should retreat to reserve trenches."],
+        options: ["Keep shellfire moving just ahead of the infantry to suppress defenders.", "Destroy friendly wire before the infantry climbed out.", "Mark a route for troops returning to their trenches.", "Draw enemy artillery fire away from the front line.", "Lay smoke across No Man's Land to hide the advance."],
         answer: 0,
         success: "Correct. It was meant to suppress defenders as the infantry advanced.",
         clue: "After the fighting, the rifle was carried back behind the front."
@@ -612,7 +614,7 @@
             <p>Conditions varied by place, weather and unit. Men were moved away from the front in turn, though reserve areas could still come under fire.</p>
           </div>`,
         question: "Which one is a discomfort, rather than an immediate danger?",
-        options: ["Damp clothes and poor sleep", "A shell bursting nearby", "A machine-gun attack"],
+        options: ["Damp clothes and poor sleep", "A shell bursting in the trench", "A gas attack", "A trench wall collapsing", "A sniper firing at the line"],
         answer: 0,
         success: "Correct. Damp clothes and poor sleep were a daily hardship, not an attack.",
         clue: "The rifle passed the aid post and continued towards the rear."
@@ -629,8 +631,8 @@
             <p><strong>Behind the line:</strong> there might be time to wash, mend clothes, write home, read or play cards. There could also be drills, inspections and work parties.</p>
             <p>Rest periods varied. Orders could send a unit back to the front with little warning.</p>
           </div>`,
-        question: "Which job would you expect to find on a soldier's list?",
-        options: ["Repairing trench walls and clearing drains", "Practising a sea crossing", "Building permanent stone houses"],
+        question: "Which job helped keep a trench usable?",
+        options: ["Repairing walls and clearing drains", "Cutting passages through enemy wire", "Moving artillery pieces through the trench", "Building permanent stone barracks", "Patrolling No Man's Land every night"],
         answer: 0,
         success: "Correct. Trenches needed repairs, especially after rain or shellfire.",
         clue: "The soldier brought his kit back to the billet. The rifle rack stood by the sleeping quarters."
@@ -639,6 +641,7 @@
 
     let activeStation = 0;
     const completed = new Set();
+    const wrongAttempts = Array(stations.length).fill(0);
     const lastAnswerPositions = new Map();
     const content = document.getElementById("station-content");
     const stationList = document.getElementById("station-list");
@@ -708,7 +711,12 @@
       const station = stations[activeStation];
       const feedback = document.getElementById("feedback");
       if (choice !== station.answer) {
-        feedback.textContent = "Not quite. Have another look at the notes.";
+        wrongAttempts[activeStation]++;
+        if (wrongAttempts[activeStation] > 1) {
+          resetGame();
+          return;
+        }
+        feedback.textContent = "One wrong answer used. Another wrong answer on this question resets the search.";
         feedback.className = "feedback try";
         return;
       }
@@ -766,13 +774,28 @@
         </div>`;
       document.getElementById("replay").addEventListener("click", () => {
         completed.clear();
+        wrongAttempts.fill(0);
+        lastAnswerPositions.clear();
         activeStation = 0;
         renderNavigation();
         renderStation();
       });
     }
 
+    function resetGame() {
+      completed.clear();
+      wrongAttempts.fill(0);
+      lastAnswerPositions.clear();
+      activeStation = 0;
+      document.getElementById("game").classList.remove("active");
+      document.getElementById("welcome").hidden = false;
+      document.getElementById("reset-notice").hidden = false;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      document.getElementById("begin").focus();
+    }
+
     document.getElementById("begin").addEventListener("click", () => {
+      document.getElementById("reset-notice").hidden = true;
       document.getElementById("welcome").hidden = true;
       document.getElementById("game").classList.add("active");
       renderNavigation();
